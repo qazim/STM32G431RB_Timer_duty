@@ -27,14 +27,6 @@ extern "C" void TIM2_IRQHandler(void) {
     
 }
 
-extern "C" void TIM3_IRQHandler(void) {
-    if (TIM3->SR & TIM_SR_CC2IF) { // Capture bayrağı
-       // captureValue[1] = TIM3->CCR2; // Capture olunan dəyəri oxuyuruq
-        TIM3->SR &= ~TIM_SR_CC2IF; // Bayrağı sıfırla
-       
-    }
-}
-
 void InitPwm(){
     //pinMode(PA6, OUTPUT);
     RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
@@ -48,14 +40,6 @@ void InitPwm(){
     TIM3->CR1 |= TIM_CR1_CEN; // Timer işə düşür
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**TIM3 GPIO Configuration
-    PA4     ------> TIM3_CH2
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-   */
     GPIOA->MODER &= ~(GPIO_MODER_MODE4_Msk | GPIO_MODER_MODE6_Msk);  // Clear bits
     GPIOA->MODER |= (0b10 << GPIO_MODER_MODE4_Pos) | (0b10 << GPIO_MODER_MODE6_Pos); 
     GPIOA->AFR[0] &= ~(GPIO_AFRL_AFRL4 | GPIO_AFRL_AFRL6); //~GPIO_AFRL_AFRL4_Msk;    // Clear AF bits
@@ -82,15 +66,7 @@ void setup() {
     GPIOA->MODER |= 0b10 << GPIO_MODER_MODE0_Pos;
     GPIOA->AFR[0] &=~GPIO_AFRL_AFRL0;
     GPIOA->AFR[0] |= 1 << GPIO_AFRL_AFSEL0_Pos;
-/*
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-*/
+    
     NVIC_EnableIRQ(TIM2_IRQn); // IRQ aktiv edilir
     NVIC_EnableIRQ(TIM3_IRQn); // IRQ aktiv edilir
     InitPwm();
