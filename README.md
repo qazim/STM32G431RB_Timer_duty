@@ -1,2 +1,2 @@
 # STM32G431RB_Timer_duty
-stm32g431rb
+Nucleo-G431RG Board measurement duty HIGH & LOW signal
